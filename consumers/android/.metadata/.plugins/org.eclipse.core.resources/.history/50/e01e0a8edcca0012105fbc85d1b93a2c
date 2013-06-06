@@ -1,0 +1,78 @@
+package com.example.test;
+
+import java.io.IOException;
+
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
+
+/**
+ * Base class for objects that connect to a RabbitMQ Broker
+ */
+public abstract class IConnectToRabbitMQ {
+	  public String mServer;
+      public String mExchange;
+
+      protected Channel channel = null;
+      protected Connection  mConnection;
+
+      protected boolean Running ;
+
+      /**
+       *
+       * @param server The server address
+       * @param exchange The named exchange
+       * @param exchangeType The exchange type name
+       */
+      public IConnectToRabbitMQ(String server)
+      {
+    	  mServer = server;
+      }
+
+      public void Dispose()
+      {
+          Running = false;
+
+			try {
+				if (mConnection!=null)
+					mConnection.close();
+				if (channel != null)
+					channel.abort();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+      }
+
+      /**
+       * Connect to the broker and create the exchange
+       * @return success
+       */
+      public boolean connectToRabbitMQ()
+      {
+    	  if(channel!= null && channel.isOpen() )//already declared
+    		  return true;
+          try
+          {
+        	  ConnectionFactory factory = new ConnectionFactory();
+              //factory.setUri("amqp://ilkfqlsk:88ZIigukFnaZr_qfQ4914HqGrtyvmWhi@bunny.cloudamqp.com/ilkfqlsk");   
+              factory.setHost("10.0.2.2");
+              mConnection = factory.newConnection();
+              channel = mConnection.createChannel();
+
+              channel.exchangeDeclare("my_exchange", "fanout");
+              channel.queueDeclare("queue", true, false, false, null);
+              channel.queueBind("queue", "my_exchange", "key");
+              
+              //channel.exchangeDeclare(mExchange, MyExchangeType, true);
+
+              return true;
+          }
+          catch (Exception e)
+          {
+        	  e.printStackTrace();
+              return false;
+          }
+      }
+}

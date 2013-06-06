@@ -1,0 +1,104 @@
+package com.lloyds.brownbag.amqp.trafficlights.consumer.android;
+
+import java.io.IOException;
+
+import android.os.Handler;
+
+import com.rabbitmq.client.QueueingConsumer;
+
+public class MessageConsumer extends BaseConsumer {
+
+	private String mQueue;
+	private QueueingConsumer consumer;
+
+	private byte[] mLastMessage;
+
+	public interface OnReceiveMessageHandler {
+		public void onReceiveMessage(byte[] message);
+	};
+
+	private OnReceiveMessageHandler mOnReceiveMessageHandler;
+
+	public void setOnReceiveMessageHandler(OnReceiveMessageHandler handler) {
+		mOnReceiveMessageHandler = handler;
+	};
+
+	private Handler mMessageHandler = new Handler();
+	private Handler mConsumeHandler = new Handler();
+
+	final Runnable mReturnMessage = new Runnable() {
+		public void run() {
+			mOnReceiveMessageHandler.onReceiveMessage(mLastMessage);
+		}
+	};
+
+	final Runnable mConsumeRunner = new Runnable() {
+		public void run() {
+			Consume();
+		}
+	};
+
+	@Override
+	public boolean connectToRabbitMQ() {
+		if (super.connectToRabbitMQ()) {
+
+			try {
+				consumer = new QueueingConsumer(channel);
+				channel.basicConsume("androidQueue", consumer);
+			} catch (IOException e) {
+				e.printStackTrace();
+				return false;
+			}
+
+			Running = true;
+			mConsumeHandler.post(mConsumeRunner);
+
+			return true;
+		}
+		return false;
+	}
+
+	public void AddBinding(String routingKey) {
+		try {
+			channel.queueBind(mQueue, mExchange, routingKey);
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
+
+	public void RemoveBinding(String routingKey) {
+		try {
+			channel.queueUnbind(mQueue, mExchange, routingKey);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	private void Consume() {
+		Thread thread = new Thread() {
+
+			@Override
+			public void run() {
+				while (Running) {
+					QueueingConsumer.Delivery delivery;
+					try {
+						delivery = consumer.nextDelivery();
+						mLastMessage = delivery.getBody();
+						mMessageHandler.post(mReturnMessage);
+						try {
+							channel.basicAck(delivery.getEnvelope()
+									.getDeliveryTag(), false);
+						} catch (IOException e) {
+							e.printStackTrace();
+						}
+					} catch (InterruptedException ie) {
+						ie.printStackTrace();
+					}
+				}
+			}
+		};
+		thread.start();
+
+	}
+}

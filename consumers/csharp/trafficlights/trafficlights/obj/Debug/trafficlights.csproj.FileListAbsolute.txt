@@ -1,0 +1,9 @@
+c:\users\dermotburke\documents\visual studio 2012\Projects\trafficlights\trafficlights\bin\Debug\trafficlights.exe.config
+c:\users\dermotburke\documents\visual studio 2012\Projects\trafficlights\trafficlights\obj\Debug\trafficlights.csprojResolveAssemblyReference.cache
+c:\users\dermotburke\documents\visual studio 2012\Projects\trafficlights\trafficlights\obj\Debug\trafficlights.Properties.Resources.resources
+c:\users\dermotburke\documents\visual studio 2012\Projects\trafficlights\trafficlights\obj\Debug\trafficlights.csproj.GenerateResource.Cache
+c:\users\dermotburke\documents\visual studio 2012\Projects\trafficlights\trafficlights\bin\Debug\trafficlights.exe
+c:\users\dermotburke\documents\visual studio 2012\Projects\trafficlights\trafficlights\bin\Debug\trafficlights.pdb
+c:\users\dermotburke\documents\visual studio 2012\Projects\trafficlights\trafficlights\obj\Debug\trafficlights.exe
+c:\users\dermotburke\documents\visual studio 2012\Projects\trafficlights\trafficlights\obj\Debug\trafficlights.pdb
+c:\users\dermotburke\documents\visual studio 2012\Projects\trafficlights\trafficlights\obj\Debug\trafficlights.TrafficLights.resources

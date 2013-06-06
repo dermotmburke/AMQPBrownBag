@@ -1,0 +1,14 @@
+<html>
+<body>
+<script src="/socket.io/socket.io.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.4/jquery.min.js"></script>
+<script>
+	var socket = io.connect('http://localhost:8099');
+	socket.on('colours', function (data) {
+  		document.body.style.background = data.colour;
+    	console.log(data);
+  	});
+</script>
+<body>
+</body>
+</html>

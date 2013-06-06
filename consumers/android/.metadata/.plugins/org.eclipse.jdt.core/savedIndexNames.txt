@@ -1,0 +1,8 @@
+INDEX VERSION 1.126+/Users/dermotburke/Documents/Workspace/brownbag/consumers/android/.metadata/.plugins/org.eclipse.jdt.core
+2825756724.index
+1573299484.index
+4072223982.index
+2292686563.index
+3026014086.index
+2529736118.index
+2768296403.index

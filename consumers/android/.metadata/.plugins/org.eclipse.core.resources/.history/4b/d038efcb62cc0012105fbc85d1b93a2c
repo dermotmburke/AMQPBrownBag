@@ -1,0 +1,65 @@
+package com.example.test;
+
+import java.io.IOException;
+
+import com.rabbitmq.client.Channel;
+import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.ConnectionFactory;
+
+/**
+ * Base class for objects that connect to a RabbitMQ Broker
+ */
+public abstract class IConnectToRabbitMQ {
+	
+      public String mExchange;
+
+      protected Channel channel = null;
+      protected Connection  mConnection;
+
+      protected boolean Running ;
+
+      public void Dispose()
+      {
+          Running = false;
+
+			try {
+				if (mConnection!=null)
+					mConnection.close();
+				if (channel != null)
+					channel.abort();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+      }
+
+      /**
+       * Connect to the broker and create the exchange
+       * @return success
+       */
+      public boolean connectToRabbitMQ()
+      {
+    	  if(channel!= null && channel.isOpen() )//already declared
+    		  return true;
+          try
+          {
+        	  ConnectionFactory factory = new ConnectionFactory();
+              factory.setUri("amqp://xvjpxzlg:IXe4AHnR9vflfNZUS0bMTIbB2_dBEMcq@bunny.cloudamqp.com/xvjpxzlg");   
+              //factory.setHost("10.0.2.2");
+              mConnection = factory.newConnection();
+              channel = mConnection.createChannel();
+
+              channel.exchangeDeclare("trafficExchange", "fanout");
+              channel.queueDeclare("androidQueue", true, false, false, null);
+              channel.queueBind("trafficQueue", "trafficExchange", "key");
+
+              return true;
+          }
+          catch (Exception e)
+          {
+        	  e.printStackTrace();
+              return false;
+          }
+      }
+}

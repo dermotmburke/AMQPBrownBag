@@ -1,0 +1,7 @@
+1370282925198	Delete element
+1370290212628	Rename package 'com.example.test'
+1370290293102	Rename type 'IConnectToRabbitMQ'
+1370444191233	Extract constant 'QUEUE_NAME'
+1370444266473	Extract constant 'EXCHANGE_NAME'
+1370444308952	Extract constant 'BROKER_URL'
+1370444418414	Extract constant 'ROUTING_KEY'

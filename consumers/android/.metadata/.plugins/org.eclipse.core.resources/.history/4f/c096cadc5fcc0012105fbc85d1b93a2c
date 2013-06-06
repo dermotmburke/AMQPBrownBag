@@ -1,0 +1,86 @@
+package com.example.test;
+
+import java.io.UnsupportedEncodingException;
+import java.util.Random;
+
+import com.example.test.MessageConsumer.OnReceiveMessageHandler;
+import com.example.test.util.SystemUiHider;
+
+import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
+import android.app.Activity;
+import android.graphics.Color;
+import android.os.Build;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.StrictMode;
+import android.view.MotionEvent;
+import android.view.View;
+import android.widget.ScrollView;
+import android.widget.TextView;
+
+/**
+ * An example full-screen activity that shows and hides the system UI (i.e.
+ * status bar and navigation/system bar) with user interaction.
+ *
+ * @see SystemUiHider
+ */
+@TargetApi(Build.VERSION_CODES.GINGERBREAD)
+public class FullscreenActivity extends Activity {
+	private MessageConsumer mConsumer;
+	private TextView mOutput;
+	private ScrollView scrollView;
+
+    /** Called when the activity is first created. */
+    @TargetApi(Build.VERSION_CODES.GINGERBREAD)
+	@SuppressLint("NewApi")
+	@Override
+    public void onCreate(Bundle savedInstanceState) {
+    	
+    	if (android.os.Build.VERSION.SDK_INT > 9) {
+    		StrictMode.ThreadPolicy policy = new StrictMode.ThreadPolicy.Builder().permitAll().build();
+    		StrictMode.setThreadPolicy(policy);
+    	}
+    	
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_fullscreen);
+
+        //The output TextView we'll use to display messages
+        mOutput =  (TextView) findViewById(R.id.output);
+        
+        scrollView = (ScrollView) findViewById(R.id.background);
+
+        //Create the consumer
+        mConsumer = new MessageConsumer();
+
+        //Connect to broker
+        mConsumer.connectToRabbitMQ();
+
+        //register for messages
+        mConsumer.setOnReceiveMessageHandler(new OnReceiveMessageHandler(){
+
+			public void onReceiveMessage(byte[] message) {
+				String text = "";
+				try {
+					text = new String(message, "UTF8");
+				} catch (UnsupportedEncodingException e) {
+					e.printStackTrace();
+				}
+				scrollView.setBackgroundColor(Color.parseColor(text));
+			}
+        });
+
+    }
+
+    @Override
+	protected void onResume() {
+		super.onPause();
+		mConsumer.connectToRabbitMQ();
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		mConsumer.dispose();
+	}
+}
